@@ -772,7 +772,7 @@
           </div>
         </div>
 
-        <!-- ── COUPON SECTION ── -->
+        <!-- ── COUPON SECTION (PICKER SCREEN) ── -->
         <div class="modal-coupon-wrap">
           <button class="coupon-toggle-link" id="couponToggleBtn" onclick="toggleCouponInput()">
             🏷️ Have a coupon code?
@@ -818,6 +818,29 @@
           <span class="plan-name" id="modalPlanName">Pro Plan</span>
           <div class="modal-plan-badge-right" id="modalPlanPriceWrap">
             <span class="modal-plan-badge-final" id="modalPlanPrice">₹1499</span>
+          </div>
+        </div>
+
+        <!-- ── COUPON SECTION (PAY/QR SCREEN) ── -->
+        <div class="modal-coupon-wrap" style="margin-top: 16px;">
+          <button class="coupon-toggle-link" id="couponToggleBtnPay" onclick="toggleCouponInputPay()">
+            🏷️ Have a coupon code?
+            <span class="coupon-arrow">▾</span>
+          </button>
+          <div class="coupon-input-area" id="couponInputAreaPay">
+            <div class="coupon-row">
+              <input
+                type="text"
+                id="couponInputPay"
+                class="coupon-input"
+                placeholder="Enter coupon code"
+                maxlength="20"
+                autocomplete="off"
+                onkeydown="if(event.key==='Enter') applyCouponPay()"
+              />
+              <button class="coupon-apply-btn" id="couponApplyBtnPay" onclick="applyCouponPay()">Apply</button>
+            </div>
+            <div id="couponMsgPay" class="coupon-msg"></div>
           </div>
         </div>
 
@@ -1513,7 +1536,7 @@
     const DISCOUNT_PCT    = 10;
 
     // ── Base prices (numbers, no formatting) ──────────────────
-    const BASE_PRICES = { starter: 499, pro: 1499, premium: 3999 };
+    const BASE_PRICES = { starter: 499, pro: 1499, premium: 2499 };
     const PLAN_LABELS = { starter: 'Starter Plan', pro: 'Pro Plan', premium: 'Premium Plan' };
 
     let couponApplied      = false;
@@ -1534,7 +1557,7 @@
       return formatINR(effectivePrice(plan));
     }
 
-    // ── Coupon toggle ──────────────────────────────────────────
+    // ── Coupon toggles ──────────────────────────────────────────
     function toggleCouponInput() {
       const area = document.getElementById('couponInputArea');
       const btn  = document.getElementById('couponToggleBtn');
@@ -1543,48 +1566,111 @@
       if (open) document.getElementById('couponInput').focus();
     }
 
-    // ── Apply coupon ───────────────────────────────────────────
-    function applyCoupon() {
-      const input   = document.getElementById('couponInput');
-      const msg     = document.getElementById('couponMsg');
-      const applyBtn = document.getElementById('couponApplyBtn');
-      const code    = input.value.trim().toUpperCase();
+    function toggleCouponInputPay() {
+      const area = document.getElementById('couponInputAreaPay');
+      const btn  = document.getElementById('couponToggleBtnPay');
+      const open = area.classList.toggle('visible');
+      btn.classList.toggle('open', open);
+      if (open) document.getElementById('couponInputPay').focus();
+    }
 
-      if (couponApplied) return; // already applied
+    // ── Apply coupon logic (synchronized for both screens) ────
+    function applyCoupon() {
+      const input = document.getElementById('couponInput');
+      const code = input.value.trim().toUpperCase();
+      executeApplyCoupon(code, 'couponInput', 'couponMsg', 'couponApplyBtn');
+    }
+
+    function applyCouponPay() {
+      const input = document.getElementById('couponInputPay');
+      const code = input.value.trim().toUpperCase();
+      executeApplyCoupon(code, 'couponInputPay', 'couponMsgPay', 'couponApplyBtnPay');
+    }
+
+    function executeApplyCoupon(code, inputId, msgId, applyBtnId) {
+      if (couponApplied) return;
 
       if (code === VALID_COUPON) {
         couponApplied = true;
-        input.classList.add('applied');
-        input.readOnly = true;
-        applyBtn.disabled = true;
-        applyBtn.textContent = '✓ Applied';
-        msg.className = 'coupon-msg success';
-        msg.innerHTML =
-          '✅ 10% off applied on all plans! &nbsp;' +
-          '<button class="coupon-remove-btn" onclick="removeCoupon()">Remove</button>';
+
+        // Sync Picker screen elements
+        const pickerInput = document.getElementById('couponInput');
+        const pickerMsg = document.getElementById('couponMsg');
+        const pickerApplyBtn = document.getElementById('couponApplyBtn');
+        const pickerArea = document.getElementById('couponInputArea');
+        const pickerToggleBtn = document.getElementById('couponToggleBtn');
+
+        pickerInput.value = VALID_COUPON;
+        pickerInput.classList.add('applied');
+        pickerInput.readOnly = true;
+        pickerApplyBtn.disabled = true;
+        pickerApplyBtn.textContent = '✓ Applied';
+        pickerMsg.className = 'coupon-msg success';
+        pickerMsg.innerHTML = '✅ 10% off applied! &nbsp;<button class="coupon-remove-btn" onclick="removeCoupon()">Remove</button>';
+        
+        pickerArea.classList.add('visible');
+        pickerToggleBtn.classList.add('open');
+
+        // Sync Pay screen elements
+        const payInput = document.getElementById('couponInputPay');
+        const payMsg = document.getElementById('couponMsgPay');
+        const payApplyBtn = document.getElementById('couponApplyBtnPay');
+        const payArea = document.getElementById('couponInputAreaPay');
+        const payToggleBtn = document.getElementById('couponToggleBtnPay');
+
+        payInput.value = VALID_COUPON;
+        payInput.classList.add('applied');
+        payInput.readOnly = true;
+        payApplyBtn.disabled = true;
+        payApplyBtn.textContent = '✓ Applied';
+        payMsg.className = 'coupon-msg success';
+        payMsg.innerHTML = '✅ 10% off applied! &nbsp;<button class="coupon-remove-btn" onclick="removeCoupon()">Remove</button>';
+        
+        payArea.classList.add('visible');
+        payToggleBtn.classList.add('open');
+
+        // Refresh all dynamic price interfaces
         refreshModalPrices();
+        showQRScreen();
       } else {
-        msg.className = 'coupon-msg error';
-        msg.textContent = '❌ Invalid coupon code. Please check and try again.';
-        input.focus();
+        const errorMsg = document.getElementById(msgId);
+        errorMsg.className = 'coupon-msg error';
+        errorMsg.textContent = '❌ Invalid coupon code. Please check and try again.';
+        document.getElementById(inputId).focus();
       }
     }
 
-    // ── Remove coupon ──────────────────────────────────────────
+    // ── Remove coupon logic (synchronized for both screens) ──
     function removeCoupon() {
       couponApplied = false;
-      const input    = document.getElementById('couponInput');
-      const msg      = document.getElementById('couponMsg');
-      const applyBtn = document.getElementById('couponApplyBtn');
-      input.value    = '';
-      input.classList.remove('applied');
-      input.readOnly = false;
-      applyBtn.disabled   = false;
-      applyBtn.textContent = 'Apply';
-      msg.className = 'coupon-msg';
-      msg.innerHTML = '';
-      input.focus();
+
+      // Reset Picker screen
+      const pickerInput = document.getElementById('couponInput');
+      const pickerMsg = document.getElementById('couponMsg');
+      const pickerApplyBtn = document.getElementById('couponApplyBtn');
+      pickerInput.value = '';
+      pickerInput.classList.remove('applied');
+      pickerInput.readOnly = false;
+      pickerApplyBtn.disabled = false;
+      pickerApplyBtn.textContent = 'Apply';
+      pickerMsg.className = 'coupon-msg';
+      pickerMsg.innerHTML = '';
+
+      // Reset Pay screen
+      const payInput = document.getElementById('couponInputPay');
+      const payMsg = document.getElementById('couponMsgPay');
+      const payApplyBtn = document.getElementById('couponApplyBtnPay');
+      payInput.value = '';
+      payInput.classList.remove('applied');
+      payInput.readOnly = false;
+      payApplyBtn.disabled = false;
+      payApplyBtn.textContent = 'Apply';
+      payMsg.className = 'coupon-msg';
+      payMsg.innerHTML = '';
+
+      // Refresh all dynamic price interfaces
       refreshModalPrices();
+      showQRScreen();
     }
 
     // ── Refresh all modal plan option price displays ───────────
@@ -1686,7 +1772,6 @@
       document.getElementById("screenPay").classList.add("active");
     }
 
-    // ── Navigation helpers inside modal ───────────────────────
     function goToPlanPicker() {
       document.getElementById("screenPay").classList.remove("active");
       document.getElementById("screenPicker").classList.add("active");
