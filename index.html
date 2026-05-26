@@ -461,16 +461,34 @@
     .modal-back-btn:hover { text-decoration: underline; }
 
     /* ── EXPERTS ── */
-    .experts-grid {
+    .experts-grid-top {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 28px;
+      margin-bottom: 28px;
     }
-    @media (max-width: 900px) {
-      .experts-grid { grid-template-columns: repeat(2, 1fr); }
+    .experts-grid-bottom {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 1024px) {
+      .experts-grid-top,
+      .experts-grid-bottom {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .experts-grid-top {
+        margin-bottom: 28px;
+      }
     }
     @media (max-width: 560px) {
-      .experts-grid { grid-template-columns: 1fr; }
+      .experts-grid-top,
+      .experts-grid-bottom {
+        grid-template-columns: 1fr;
+      }
+      .experts-grid-top {
+        margin-bottom: 28px;
+      }
     }
     .expert-card {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
@@ -1133,7 +1151,9 @@
       <p class="section-label fade-in">Your Mentors</p>
       <h2 class="section-title fade-in">Meet the Experts Behind IMTIIM</h2>
       <p class="section-sub fade-in">Every Pro and Premium session is conducted by professionals who've been hired by India's top companies and know exactly what gets candidates shortlisted.</p>
-      <div class="experts-grid">
+      
+      <!-- Top Row: Mudit, Srujani, Jatin -->
+      <div class="experts-grid-top">
 
         <!-- Mudit -->
         <div class="expert-card fade-in">
@@ -1197,6 +1217,11 @@
           </div>
           <p class="expert-quote">"Working at Amazon, I see what world-class hiring looks like up close. The bar is high — and most candidates don't fail because they lack talent, they fail because their resume doesn't communicate it. In our sessions, I help you speak the language that top companies actually want to hear. One sharp, focused conversation can completely change how recruiters see you."</p>
         </div>
+
+      </div>
+
+      <!-- Bottom Row: Udit, Gulab, Bhupesh, Sagar -->
+      <div class="experts-grid-bottom">
 
         <!-- Udit -->
         <div class="expert-card fade-in">
@@ -1564,14 +1589,6 @@
       const open = area.classList.toggle('visible');
       btn.classList.toggle('open', open);
       if (open) document.getElementById('couponInput').focus();
-    }
-
-    function toggleCouponInputPay() {
-      const area = document.getElementById('couponInputAreaPay');
-      const btn  = document.getElementById('couponToggleBtnPay');
-      const open = area.classList.toggle('visible');
-      btn.classList.toggle('open', open);
-      if (open) document.getElementById('couponInputPay').focus();
     }
 
     // ── Apply coupon logic (synchronized for both screens) ────
