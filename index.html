@@ -760,11 +760,11 @@
             <div class="mpo-left">
               <div class="mpo-radio"></div>
               <div class="mpo-info">
-                <span class="mpo-name">Starter — ₹499</span>
+                <span class="mpo-name">Starter — ₹249 <span style="text-decoration: line-through; color: #9ca3af; font-size: 0.85em; margin-left: 4px;">₹499</span></span>
                 <span class="mpo-desc">AI-corrected resume delivered to your email within 24 hrs</span>
               </div>
             </div>
-            <div class="mpo-price" id="mpo-price-starter">₹499</div>
+            <div class="mpo-price" id="mpo-price-starter">₹249</div>
           </div>
           <!-- Pro -->
           <div class="modal-plan-option popular-option" id="mpo-pro" onclick="pickModalPlan('pro')">
@@ -971,7 +971,7 @@
       <p style="text-align:center; font-weight:700; font-size:.85rem; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:20px;" class="fade-in">Then — here's what happens based on your plan</p>
       <div class="plan-tracks">
         <div class="track-card track-starter fade-in">
-          <span class="track-badge">Starter — ₹499</span>
+          <span class="track-badge">Starter — ₹249 (was ₹499)</span>
           <h3>AI-Powered Resume Fix</h3>
           <div class="track-steps">
             <div class="track-step"><div class="track-step-dot"></div><span>Our AI engine scans &amp; rewrites your CV for ATS keywords and formatting</span></div>
@@ -1079,7 +1079,8 @@
           <div class="price-header">
             <h3>Starter</h3>
             <p class="price-tagline">For candidates who need a strong CV fast</p>
-            <div class="price-amount">₹499 <span>one-time</span></div>
+            <div style="font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">⚠️ Limited time offer</div>
+            <div class="price-amount"><span style="text-decoration: line-through; color: var(--muted); font-size: 1.4rem; margin-right: 8px; font-weight: 600;">₹499</span>₹249 <span>one-time</span></div>
           </div>
           <ul class="price-features">
             <li>Full AI Resume Optimization</li>
@@ -1090,7 +1091,7 @@
           </ul>
           <div class="price-card-actions">
             <button class="plan-select-btn" onclick="event.stopPropagation(); selectPlan('starter')">Select Starter</button>
-            <button class="pay-now-btn" onclick="event.stopPropagation(); selectAndPay('starter')">💳 Pay ₹499 &amp; Get Started</button>
+            <button class="pay-now-btn" onclick="event.stopPropagation(); selectAndPay('starter')">💳 Pay ₹249 &amp; Get Started</button>
           </div>
         </div>
 
@@ -1422,7 +1423,7 @@
   <section class="cta-section">
     <div class="container">
       <h2 class="fade-in">Your Next Job Is Closer Than You Think.<br/>Let's Get You There.</h2>
-      <p class="fade-in">AI-powered resume + real 1-on-1 sessions with top MBA graduates &amp; industry professionals. Starting at just ₹499.</p>
+      <p class="fade-in">AI-powered resume + real 1-on-1 sessions with top MBA graduates &amp; industry professionals. Starting at just ₹249.</p>
       <button class="btn btn-white btn-lg fade-in" onclick="openPaymentModal()">Choose Your Plan &amp; Get Started →</button>
       <p class="cta-note fade-in">Results in 24 hours · No subscription · Pay securely via UPI</p>
     </div>
@@ -1561,7 +1562,7 @@
     const DISCOUNT_PCT    = 10;
 
     // ── Base prices (numbers, no formatting) ──────────────────
-    const BASE_PRICES = { starter: 499, pro: 1499, premium: 2499 };
+    const BASE_PRICES = { starter: 249, pro: 1499, premium: 2499 };
     const PLAN_LABELS = { starter: 'Starter Plan', pro: 'Pro Plan', premium: 'Premium Plan' };
 
     let couponApplied      = false;
@@ -1589,6 +1590,14 @@
       const open = area.classList.toggle('visible');
       btn.classList.toggle('open', open);
       if (open) document.getElementById('couponInput').focus();
+    }
+
+    function toggleCouponInputPay() {
+      const area = document.getElementById('couponInputAreaPay');
+      const btn  = document.getElementById('couponToggleBtnPay');
+      const open = area.classList.toggle('visible');
+      btn.classList.toggle('open', open);
+      if (open) document.getElementById('couponInputPay').focus();
     }
 
     // ── Apply coupon logic (synchronized for both screens) ────
